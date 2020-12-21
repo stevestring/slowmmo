@@ -69,10 +69,16 @@ export class Board extends React.Component{
       {
         if (g[y][x].owner === this.props.playerId)
         {
-          console.log("adding units: ["+ x + "," + y + "]");
-          //g[y][x].units ++;
-          this.Deploy (x,y);
-          this.setState({'grid':g});
+          if (g[y][x].units>98 )
+          {
+            console.log("["+ x + "," + y + "] is maxed out");
+          }
+          else
+          {
+            console.log("adding units: ["+ x + "," + y + "]");
+            this.Deploy (x,y);          
+            this.setState({'grid':g});
+          }
         }
       }
       else if (m===1)
@@ -143,6 +149,7 @@ export class Board extends React.Component{
       )
   }
 
+  //decrement units on deploy
   Deploy(sourceX, sourceY){
     fetch("http://localhost:8080/game/deploy/"+this.props.playerId+"/"+sourceX+"/"+sourceY , {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
