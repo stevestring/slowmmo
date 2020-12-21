@@ -12,8 +12,8 @@ export class Board extends React.Component{
       //this sets up an empty board
       'isLoaded': false,
       'grid':grid, 
-      'mode':1, //0=Deploy, 1=AttackSource, 2=AttackTarget
       'selected': [-1,-1]
+      
     };
 
     //bind this word to helper functions
@@ -50,6 +50,8 @@ export class Board extends React.Component{
           });
         }
       )
+
+      
   }
 
 
@@ -57,24 +59,31 @@ export class Board extends React.Component{
   handleClick(y, x){
 
       const g = this.state.grid;
-      const m = this.state.mode;
+      const m = this.props.mode;
       const s = this.state.selected;
       //set the grid square cooresponding to the clicked square to the color of the current player
       
-      //alert(x + "," + y);
-
+      console.log(m);
+      
       if (m===0)
       {
-        g[x][y].units ++;
-        this.setState({'gridUnits':g});
+        if (g[y][x].owner === this.props.playerId)
+        {
+          console.log("adding units: ["+ x + "," + y + "]");
+          //g[y][x].units ++;
+          this.Deploy (x,y);
+          this.setState({'grid':g});
+        }
       }
       else if (m===1)
       {
         //make sure owned 
+        console.log("selecting: "+this.props.playerId) ;
         if (g[y][x].owner === this.props.playerId)
         {
             this.setState({'selected':[y,x]});
-            this.setState({'mode':2});  
+            //this.setState({'mode':2});  
+            this.props.onModeChange(2);
         }
       }
       else if (m===2)
@@ -82,7 +91,8 @@ export class Board extends React.Component{
         if (x===s[1] && y===s[0])//unselect
         {
             this.setState({'selected':[-1,-1]});
-            this.setState({'mode':1});              
+            //this.setState({'mode':1});          
+            this.props.onModeChange(1);    
         }
         else if (g[y][x].owner !== this.props.playerId) //valid target?
         {
@@ -92,7 +102,9 @@ export class Board extends React.Component{
 
                 this.setState({'selected':[-1,-1]});
                 this.setState({'grid':g});   
-                this.setState({'mode':1});  
+                
+                //this.setState({'mode':1});  
+                this.props.onModeChange(1);
             }
         }
       }
@@ -130,6 +142,37 @@ export class Board extends React.Component{
         }
       )
   }
+
+  Deploy(sourceX, sourceY){
+    fetch("http://localhost:8080/game/deploy/"+this.props.playerId+"/"+sourceX+"/"+sourceY , {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'same-origin', // include, *same-origin, omit
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            isLoaded: true,
+            grid: result
+          });
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      )
+  }
+
 
   render(){
     const { error, isLoaded } = this.state;
