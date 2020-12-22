@@ -21,7 +21,7 @@ export class Board extends React.Component{
   }
 
   componentDidMount() {
-    fetch("http://localhost:8080/game",{
+    fetch("http://"+process.env.REACT_APP_API_SERVER+":8080/game",{
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
       //mode: 'no-cors', // no-cors, *cors, same-origin
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -78,6 +78,7 @@ export class Board extends React.Component{
             console.log("adding units: ["+ x + "," + y + "]");
             this.Deploy (x,y);          
             this.setState({'grid':g});
+            this.props.onDeploy();
           }
         }
       }
@@ -119,7 +120,7 @@ export class Board extends React.Component{
   }
 
   Attack(sourceX, sourceY, targetX, targetY){
-    fetch("http://localhost:8080/game/attack/"+this.props.playerId+"/"+sourceX+"/"+sourceY + "/" + targetX+"/"+targetY, {
+    fetch("http://"+process.env.REACT_APP_API_SERVER+":8080/game/attack/"+this.props.playerId+"/"+sourceX+"/"+sourceY + "/" + targetX+"/"+targetY, {
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'same-origin', // include, *same-origin, omit
@@ -151,7 +152,7 @@ export class Board extends React.Component{
 
   //decrement units on deploy
   Deploy(sourceX, sourceY){
-    fetch("http://localhost:8080/game/deploy/"+this.props.playerId+"/"+sourceX+"/"+sourceY , {
+    fetch("http://"+process.env.REACT_APP_API_SERVER+":8080/game/deploy/"+this.props.playerId+"/"+sourceX+"/"+sourceY , {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'same-origin', // include, *same-origin, omit

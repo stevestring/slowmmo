@@ -13,15 +13,69 @@ class App extends React.Component {
       super(props);
       this.state = {
         'isLoaded': false,
-        'playerID':1 //should be player object
+        'playerID':1, //should be player object
+        'player':{playerID: 1, units:0}
       };   
       
       this.handleSelect = this.handleSelect.bind(this);
+      this.handleDeploy = this.handleDeploy.bind(this);
+    }
+
+    handleDeploy() {
+        //alert(mode);
+        this.setState({'player': {playerID:this.state.playerID, units:this.state.units-1}});
+    }
+
+    GetPlayer()
+    {
+      //alert("Getting Player Data");
+
+      fetch("http://"+process.env.REACT_APP_API_SERVER+":8080/game/player/"+this.state.playerID,{
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        //mode: 'no-cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      })
+        .then(res => res.json())
+        .then(
+          (result) => {            
+            this.setState({
+              isLoaded: true,
+              player: {playerID: this.state.playerID, units:result.units}
+            });
+          },
+          // Note: it's important to handle errors here
+          // instead of a catch() block so that we don't swallow
+          // exceptions from actual bugs in components.
+          (error) => {
+            this.setState({
+              isLoaded: true,
+              error
+            });
+          }
+        )
+
+        console.log(this.state.player);
+    }
+
+    componentDidMount() {
+      this.GetPlayer();
+      this.interval = setInterval(() => this.GetPlayer(), 5000);      
+    }  
+    
+    componentWillUnmount() {
+        clearInterval(this.interval);
     }
 
   handleSelect(key) {      
     //alert (key);
     this.setState({ 'playerID': parseInt(key) });
+    this.GetPlayer();
   }
 
   render() {
@@ -49,7 +103,7 @@ class App extends React.Component {
     </Navbar>
 <br/>
     <Container>
-      <Game playerID={this.state.playerID}/>
+      <Game playerID={this.state.playerID} player = {this.state.player} onDeploy={this.handleDeploy}/>
       </Container>
     </div>
   );
