@@ -1,20 +1,25 @@
 import React from 'react';
 import { Board } from './Board';
 import Row from 'react-bootstrap/Row';
-import Nav from 'react-bootstrap/Nav';
-import Badge from 'react-bootstrap/Badge';
-
+import { BoardNav } from './BoardNav';
 export class Game extends React.Component{
 
     constructor(props){
         super(props);
+        let m = 1
+        if (this.props.player.squares===0)
+        {
+            m=3;
+        }
+
         this.state = {
           //this sets up an empty board
           'isLoaded': false,
-          //'units':0, 
-          'mode':0 //0=Deploy, 1=AttackSource, 2=AttackTarget
+          'mode':m //0=Deploy, 1=AttackSource, 2=AttackTarget, 3=FirstDeployment
         };   
         
+        //alert (JSON.stringify(this.props.player));
+
         //bind this word to helper functions
         //this.handleClick = this.handleClick.bind(this);
         this.handleModeChange = this.handleModeChange.bind(this);
@@ -24,43 +29,31 @@ export class Game extends React.Component{
 
     handleModeChange(mode) {
       //alert(mode);
-      this.setState({'mode': mode});
+      this.setState({'mode': parseInt( mode)});
     }
-
-    // //TODO bump event up
-    // handleDeploy(mode) {
-    //     //alert(mode);
-    //     this.setState({'units': this.state.units-1});
-    // }
 
     handleSelect(key) {      
           //alert (key);
           this.setState({ 'mode': parseInt(key) });
     }
-
     
 
     render(){
 
         return (<div>
-          <Row>
-            <Nav variant="pills" defaultActiveKey={1} onSelect={this.handleSelect}>
-            <Nav.Item>
-                <Nav.Link eventKey={1}>
-                  Attack
-                </Nav.Link>
-              </Nav.Item>                
-              <Nav.Item>
-                <Nav.Link eventKey={0}>Deploy <Badge variant="light">{this.props.player.units}</Badge></Nav.Link>
-              </Nav.Item>
- 
-            </Nav>
-
-            </Row>
+            
+            <h1 style={{color:this.props.player.color}}>Name:{this.props.player.name}</h1>    
+            <h1>{this.state.mode}</h1>
+                {/* <h1 style={{color:this.props.player.color}}>{this.props.playerID}</h1>   */}
+                
+                {this.state.mode ===3 ?
+                    <h2>Choose your first placement (any gray square)</h2>
+                    : <BoardNav onModeChange={this.handleModeChange} player={this.props.player}/>}              
             <br/>
          
           <Row>
-          <Board playerId={this.props.playerID} mode={this.state.mode} onModeChange={this.handleModeChange} onDeploy={this.props.handleDeploy}/>          
+          <Board playerId={this.props.playerID} mode={this.state.mode} 
+            onModeChange={this.handleModeChange} onDeploy={this.props.onDeploy} player ={this.props.player} players = {this.props.players}/>          
          </Row>
          </div>
          

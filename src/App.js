@@ -1,11 +1,11 @@
 import './App.css';
 import React from 'react';
 import { Game } from './components/Game';
+import { Lobby } from './components/Lobby';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import {Square} from './components/Square';
 
 class App extends React.Component {
 
@@ -13,24 +13,31 @@ class App extends React.Component {
       super(props);
       this.state = {
         'isLoaded': false,
-        'playerID':1, //should be player object
-        'player':{playerID: 1, units:0}
+        'playerID':parseInt(localStorage.getItem('playerID')) || '', //should be player object
+        'player':{playerID: 0, units:0},
+        'mode':0, //0=lobby, 1==game,
+        'players':{},
       };   
       
       this.handleSelect = this.handleSelect.bind(this);
+      this.handleSelectPlayer = this.handleSelectPlayer.bind(this);
       this.handleDeploy = this.handleDeploy.bind(this);
     }
 
     handleDeploy() {
-        //alert(mode);
-        this.setState({'player': {playerID:this.state.playerID, units:this.state.units-1}});
+        // alert(mode);
+
+        var player = this.state.player;
+        player.units = player.units-- ;
+        this.setState({'player':player});
+
+        //this.setState({'player': {playerID:this.state.playerID, units:this.state.player.units-1}});
     }
 
-    GetPlayer()
+    GetPlayers()
     {
-      //alert("Getting Player Data");
 
-      fetch("http://"+process.env.REACT_APP_API_SERVER+":8080/game/player/"+this.state.playerID,{
+      fetch("http://"+process.env.REACT_APP_API_SERVER+":8080/game/players/",{
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         //mode: 'no-cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -46,7 +53,45 @@ class App extends React.Component {
           (result) => {            
             this.setState({
               isLoaded: true,
-              player: {playerID: this.state.playerID, units:result.units}
+              players: result
+            });
+          },
+          // Note: it's important to handle errors here
+          // instead of a catch() block so that we don't swallow
+          // exceptions from actual bugs in components.
+          (error) => {
+            this.setState({
+              isLoaded: true,
+              error
+            });
+          }
+        )
+
+        console.log(this.state.players);
+    }
+
+
+    GetPlayer(playerID)
+    {
+      //alert("Getting Player Data: "+ playerID);
+
+      fetch("http://"+process.env.REACT_APP_API_SERVER+":8080/game/player/"+playerID,{
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        //mode: 'no-cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      })
+        .then(res => res.json())
+        .then(
+          (result) => {            
+            this.setState({
+              isLoaded: true,
+              player: result
             });
           },
           // Note: it's important to handle errors here
@@ -63,20 +108,34 @@ class App extends React.Component {
         console.log(this.state.player);
     }
 
-    componentDidMount() {
-      this.GetPlayer();
-      this.interval = setInterval(() => this.GetPlayer(), 5000);      
+    componentDidMount() {   
+      this.GetPlayer(this.state.playerID);
+      this.GetPlayers();
+      // if (this.state.player.squares===0)
+      // {
+      //   this.setState('mode',3);
+      // }
+      //this.interval = setInterval(() => this.GetPlayer(), 5000);  //Update Units    
     }  
     
     componentWillUnmount() {
         clearInterval(this.interval);
     }
 
-  handleSelect(key) {      
-    //alert (key);
-    this.setState({ 'playerID': parseInt(key) });
-    this.GetPlayer();
+  handleSelectPlayer(id) {          
+    //alert (id);
+    this.setState({ 'playerID': parseInt(id) });
+    localStorage.setItem('playerID', parseInt(id));
+    this.GetPlayer(id);
+    this.GetPlayers()//make sure new user added to collection
   }
+
+  handleSelect(id) {          
+    //alert (id);
+    this.setState({ 'playerID': ''});
+    localStorage.removeItem('playerID');   
+  }
+
 
   render() {
   return (
@@ -92,19 +151,18 @@ class App extends React.Component {
         </Nav>      
       <Nav>
             <NavDropdown title="Player" id="player-dropdown" className="justify-content-end" 
-              onSelect={this.handleSelect} defaultActiveKey={this.state.playerID} >
-                <NavDropdown.Item eventKey={1}><Square owner={1} selected={this.state.playerID===1}/></NavDropdown.Item>
-                <NavDropdown.Item eventKey={2}><Square owner={2} selected={this.state.playerID===2}/></NavDropdown.Item>
-                <NavDropdown.Item eventKey={3}><Square owner={3} selected={this.state.playerID===3}/></NavDropdown.Item>
-                <NavDropdown.Item eventKey={4}><Square owner={4} selected={this.state.playerID===4}/></NavDropdown.Item>
+              onSelect={this.handleSelect} >
+                <NavDropdown.Item eventKey={1}>Logout</NavDropdown.Item>
           </NavDropdown>   
             </Nav>
             </Navbar.Collapse>
     </Navbar>
 <br/>
-    <Container>
-      <Game playerID={this.state.playerID} player = {this.state.player} onDeploy={this.handleDeploy}/>
-      </Container>
+    <Container>      
+      {this.state.playerID !=='' ?
+      <Game playerID={this.state.playerID} player = {this.state.player} onDeploy={this.handleDeploy} players={this.state.players}/>
+      : <Lobby onPlayerSelect={this.handleSelectPlayer}/>}  
+    </Container>
     </div>
   );
 }

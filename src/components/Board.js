@@ -63,15 +63,25 @@ export class Board extends React.Component{
       const s = this.state.selected;
       //set the grid square cooresponding to the clicked square to the color of the current player
       
-      console.log(m);
-      
+      //console.log(m===0);
       if (m===0)
       {
-        if (g[y][x].owner === this.props.playerId)
+        
+        if (g[y][x].owner !== this.props.playerId )
+        {
+          console.log(g[y][x].owner +" != " + this.props.playerId);
+          // console.log(g[y][x].owner === '7');
+          // console.log(this.props.playerId === '7');
+        }
+        else
         {
           if (g[y][x].units>98 )
           {
             console.log("["+ x + "," + y + "] is maxed out");
+          }
+          else if (this.props.player.units<1)
+          {
+            console.log("No units to deploy");
           }
           else
           {
@@ -115,7 +125,18 @@ export class Board extends React.Component{
             }
         }
       }
+      else if (m===3)//first placement
+      {
+        if (g[y][x].owner === 0) //Can't be owned, must be grey
+        {
 
+          console.log("claiming: ["+ x + "," + y + "]");
+          this.Claim (x,y);          
+          this.setState({'grid':g});
+          this.props.onDeploy();
+          this.props.onModeChange(0);
+        }
+      }
 
   }
 
@@ -182,6 +203,41 @@ export class Board extends React.Component{
   }
 
 
+Claim(sourceX, sourceY){
+  fetch("http://"+process.env.REACT_APP_API_SERVER+":8080/game/claim", {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      'pId': this.props.playerId,
+      'x1': sourceX,
+      'y1': sourceY
+    })
+  })
+    .then(res => res.json())
+    .then(
+      (result) => {
+        this.setState({
+          isLoaded: true,
+          grid: result
+        });
+      },
+      // Note: it's important to handle errors here
+      // instead of a catch() block so that we don't swallow
+      // exceptions from actual bugs in components.
+      (error) => {
+        this.setState({
+          isLoaded: true,
+          error
+        });
+      }
+    )
+}
+
   render(){
     const { error, isLoaded } = this.state;
     if (error) {
@@ -204,7 +260,7 @@ export class Board extends React.Component{
       //const u = null;
       //loop through the squares in each row and generate a new Square component,
       //passing in props to the Square component in the nested map() function
-      const board = Object.keys(g).map((row, i) => { return ( <div>     
+      const board = Object.keys(g).map((row, i) => { return (     
         <tr key={"row_"+i}>
           
           {Object.keys(g[row]).map((col, j) => {    
@@ -220,14 +276,14 @@ export class Board extends React.Component{
               // <Square handleClick={()=>this.handleClick(i,j)} owner={g[i][j]} units={Math.floor(Math.random()*100)} key={i+"_"+j} />
               <Square handleClick={()=>this.handleClick(i,j)} 
                   owner={g[i][j].owner} units={g[i][j].units} selected={selected_} 
-                  key={i+"_"+j} playerId = {this.props.playerId}/>
+                  key={i+"_"+j} playerId = {this.props.playerId} players = {this.props.players}/>
                 )
               }
             )
           }
           
         </tr>
-        </div>)
+        )
       });
 
       //returns the board with the Square Components in {board},

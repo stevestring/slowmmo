@@ -17,8 +17,12 @@ export class Square extends React.Component{
     const owner = this.props.owner;
     const playerId = this.props.playerId;
 
-    const color_ = PlayerColors[this.props.owner];
-    let borderColor_ = PlayerColors[this.props.owner];    
+    let color_ = "black";
+    if ( this.props.players[this.props.owner] != null)
+    {
+        color_ = this.props.players[this.props.owner].color ;
+    }
+    let borderColor_ = color_;
     let cursor_ = "default";
 
     //alert ( owner +";"+ playerId)
