@@ -12,6 +12,8 @@ export class Game extends React.Component{
             m=3;
         }
 
+        console.log("player: "+JSON.stringify(this.props.player));
+
         this.state = {
           //this sets up an empty board
           'isLoaded': false,
@@ -27,9 +29,11 @@ export class Game extends React.Component{
         //this.handleDeploy = this.handleDeploy.bind(this);
       }
 
+      //Need to set selected to null if not mode = 1
     handleModeChange(mode) {
       //alert(mode);
       this.setState({'mode': parseInt( mode)});
+      
     }
 
     handleSelect(key) {      

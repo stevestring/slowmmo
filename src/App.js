@@ -1,4 +1,4 @@
-import './App.css';
+
 import React from 'react';
 import { Game } from './components/Game';
 import { Lobby } from './components/Lobby';
@@ -28,7 +28,8 @@ class App extends React.Component {
         // alert(mode);
 
         var player = this.state.player;
-        player.units = player.units-- ;
+        player.units = player.units -1 ;
+        console.log(player.units);
         this.setState({'player':player});
 
         //this.setState({'player': {playerID:this.state.playerID, units:this.state.player.units-1}});
@@ -111,10 +112,10 @@ class App extends React.Component {
     componentDidMount() {   
       this.GetPlayer(this.state.playerID);
       this.GetPlayers();
-      // if (this.state.player.squares===0)
-      // {
-      //   this.setState('mode',3);
-      // }
+      if (this.state.player.squares===0)
+      {
+        this.setState('mode',3);
+      }
       //this.interval = setInterval(() => this.GetPlayer(), 5000);  //Update Units    
     }  
     
