@@ -268,7 +268,11 @@ Claim(sourceX, sourceY){
                       
             const selected_ = s[0] === i && s[1] === j && this.props.mode===2;    
 
-            //set the color of the square based on state.grid
+            let color_ = "grey";
+            if ( this.props.players[g[i][j].owner] != null)
+            {
+                color_ = this.props.players[g[i][j].owner].color ;
+            }
 
             //return Square component, passing in the following as props:
             //a value for the key which React needs (I think) and
@@ -277,7 +281,7 @@ Claim(sourceX, sourceY){
               // <Square handleClick={()=>this.handleClick(i,j)} owner={g[i][j]} units={Math.floor(Math.random()*100)} key={i+"_"+j} />
               <Square handleClick={()=>this.handleClick(i,j)} 
                   owner={g[i][j].owner} units={g[i][j].units} selected={selected_} 
-                  key={i+"_"+j} playerId = {this.props.playerId} players = {this.props.players} 
+                  key={i+"_"+j} playerId = {this.props.playerId} color = {color_} 
                   mode={this.props.mode}/>
                 )
               }

@@ -2,6 +2,10 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { CompactPicker } from 'react-color';
+import { CirclePicker } from 'react-color';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import { Square2 } from './Square2';
 
 export class Lobby extends React.Component{
 
@@ -64,16 +68,49 @@ export class Lobby extends React.Component{
     render(){
 
         return (<div>
-          <h1>{this.props.playerID}</h1>
+          <h1>Welcome! Choose your name and color</h1>
+          <br/>
+          {/* <h3>Choose your name and color</h3> */}
+          <br/>
+
+
 <Form onSubmit={this.handleSubmit}>
-  <Form.Group controlId="formName">
-    <Form.Label>Name</Form.Label>
-    <Form.Control placeholder="Enter name" onChange={this.handleNameChange}/>
+
+<Form.Group as={Row} controlId="formResult">
+  <Form.Label column sm="1">Preview</Form.Label>
+    <Col sm="5">
+    <Square2 color={this.state.color}/>
+<span>&nbsp;&nbsp;</span> 
+<h2 style={{float:"left"}} >{this.state.name}</h2>
+<div style={{clear:"both"}}></div>
+    </Col>   
+
   </Form.Group>
-  <Form.Group controlId="formColor">
-    {/* <Form.Label>Color</Form.Label> */}
-     <CompactPicker onChangeComplete={ this.handleColorChange }/>
+  <Form.Group as={Row} controlId="formName">
+    <Form.Label column sm="1">Name</Form.Label>
+    <Col sm="5">
+      <Form.Control required placeholder="Enter name" onChange={this.handleNameChange}/>
+    </Col>    
   </Form.Group>
+  <Form.Group as={Row} controlId="formColor">
+  <Form.Label column sm="1">Color</Form.Label>
+    <Col sm="5">
+      <CirclePicker required onChangeComplete={ this.handleColorChange }/>
+    </Col>    
+
+  </Form.Group>
+
+
+
+  <br/>
+  {/* <Row>
+  <Square2 color={this.state.color}/>
+<span>&nbsp;</span> 
+<h2 style={{float:"left"}} >{this.state.name}</h2>
+<div style={{clear:"both"}}></div>
+</Row> */}
+<hr/>
+
   <Button variant="primary" type="submit">
     Submit
   </Button>

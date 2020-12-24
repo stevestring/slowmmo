@@ -35,19 +35,25 @@ export class Game extends React.Component{
 
     render(){
 
-        return (<div>
-            
-            {/* <h1 className="text-center">
-                {this.props.player.name}
-            </h1>     */}
-            {/* <h1>{this.props.mode}</h1> */}
+        return (<div>           
+            <Row className="justify-content-md-center">
+<Square2  owner={this.props.playerID} color={this.props.player.color}/>
+<span>&nbsp;</span> 
+<h2 style={{float:"left"}} >{this.props.player.name}</h2>
+<div style={{clear:"both"}}></div></Row>
 
+<Row>
                 {this.props.mode ===3 ? //First placement
-                    <h3>Choose your first placement (any gray square)</h3>
+                    <h4>Choose any grey square to begin...</h4>
                     : <BoardNav onModeChange={this.props.onModeChange} player={this.props.player} mode={this.props.mode}/>}              
-            <br/>
-         
-          <Row>
+            
+            </Row>
+      
+          <br/>
+          <Row 
+        //   className="justify-content-md-center"
+          >
+              
           <Board playerId={this.props.playerID} mode={this.props.mode} 
             onModeChange={this.props.onModeChange} onDeploy={this.props.onDeploy}
             player ={this.props.player} players = {this.props.players}/>          

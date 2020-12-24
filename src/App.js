@@ -5,8 +5,7 @@ import { Lobby } from './components/Lobby';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
-import NavDropdown from 'react-bootstrap/NavDropdown';
-import { Square2 } from './components/Square2';
+
 class App extends React.Component {
 
   constructor(props){
@@ -36,7 +35,13 @@ class App extends React.Component {
 
         var player = this.state.player;
         player.units = player.units -1 ;
-        console.log(player.units);
+
+        // if (player.squares===0) //Maybe not the best place for this
+        // {
+        //     player.squares=1;
+        // }
+
+        //console.log(player.units);
         this.setState({'player':player});
 
         //this.setState({'player': {playerID:this.state.playerID, units:this.state.player.units-1}});
@@ -160,25 +165,28 @@ class App extends React.Component {
   render() {
   return (
     <div className="App">      
-      <Navbar bg="dark" variant="dark">
+      <Navbar 
+      // bg="dark" variant="dark"
+      >
       
       <Navbar.Brand href="#home">Slow MMO</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <Nav.Link href="#home">Home</Nav.Link>
-          <Nav.Link href="#link">Link</Nav.Link>
+          <Nav.Link href="#home">About</Nav.Link>
+          <Nav.Link href="#home">Blog</Nav.Link>
         </Nav>     
-        <Square2 owner={this.state.playerID} players={this.state.players}/> 
-      <Nav>
-            <NavDropdown title={this.state.player.name} id="player-dropdown" className="justify-content-end" 
+        {/* <Square2 owner={this.state.playerID} players={this.state.players}/>  */}
+      <Nav onSelect={this.handleSelect}>
+            {/* <NavDropdown title={this.state.player.name} id="player-dropdown" className="justify-content-end" 
               onSelect={this.handleSelect} >
                 <NavDropdown.Item eventKey={1}>Logout</NavDropdown.Item>
-          </NavDropdown>   
+          </NavDropdown>    */}
+            <Nav.Link eventKey={1}>Logout</Nav.Link>
             </Nav>
             </Navbar.Collapse>
     </Navbar>
-<br/>
+{/* <br/> */}
     <Container>      
       {this.state.playerID !=='' ?
       <Game playerID={this.state.playerID} mode ={this.state.mode} player = {this.state.player} 

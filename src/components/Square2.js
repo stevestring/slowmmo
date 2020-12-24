@@ -7,13 +7,15 @@ export class Square2 extends React.Component{
     const selected = this.props.selected;
     const owner = this.props.owner;
     const playerId = this.props.playerId;
+    let color_ = this.props.color;
 
-    let color_ = "black";
-    if ( this.props.players[this.props.owner] != null)
-    {
-        color_ = this.props.players[this.props.owner].color ;
-    }
-    let borderColor_ = color_;
+    // let color_ = "white";
+    // if ( this.props.players[this.props.owner] != null)
+    // {
+    //     color_ = this.props.players[this.props.owner].color ;
+    // }
+
+    let border_;
     let cursor_ = "default";
 
     if (this.props.mode===3)
@@ -33,17 +35,22 @@ export class Square2 extends React.Component{
 
     if (selected)
     {
-        borderColor_ = "yellow";
+        console.log ("cell selected");
+        //borderColor_ = "yellow";
+        border_ = "2px solid white"; 
     }
     return (
 
         <div
           style={{
-                  border:"2px solid",                
+            float:"left",
+                  padding:"1px solid",                
                   backgroundColor: color_,
-                  borderColor: "#FFFFFF",
-                  width:25,
-                  height:25,
+                  //borderColor: borderColor_,
+                  border: border_,
+                  width:"2vw",
+                  height:"2vw",
+                  fontSize: "1vw",
                   cursor: cursor_ }} >
             {units}           
         </div>
