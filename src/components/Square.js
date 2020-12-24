@@ -47,10 +47,10 @@ export class Square extends React.Component{
     return (
       <td
         style={{
-          overflow:'hidden',
+          //overflow:'hidden',
           //width:'25px',
           //height:'25px',
-          border:"2px solid white" ,
+          //border:"2px solid white" ,
 
         }}
       onClick={this.props.handleClick} >
@@ -60,8 +60,8 @@ export class Square extends React.Component{
                   border:"2px solid",                
                   backgroundColor: color_,
                   borderColor: borderColor_,
-                  width:30,
-                  height:30,
+                  width: "2vw",
+                  height:"2vw",
                   cursor: cursor_ }} >
             {units}           
         </div>

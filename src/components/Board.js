@@ -293,12 +293,11 @@ Claim(sourceX, sourceY){
       //this could be further refactored to separate the layout and styling, but it isn't that complicated so I will leave it like this
       return (
         <div style={{ textAlign:'center'}} >
-        <table style={style}>
+        <table style={style} class="unselectable">
           <tbody>
             {board}
           </tbody>
         </table>
-
         </div>
       )
     }
