@@ -6,24 +6,31 @@ import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-
+import { Square2 } from './components/Square2';
 class App extends React.Component {
 
   constructor(props){
       super(props);
       this.state = {
         'isLoaded': false,
-        'playerID':parseInt(localStorage.getItem('playerID')) || '', //should be player object
+        'playerID': '', //should be player object
         'player':{playerID: 0, units:0},
-        'mode':0, //0=lobby, 1==game,
+        'mode':1, //0=Deploy, 1=AttackSource, 2=AttackTarget, 3=FirstDeployment
         'players':{},
       };   
       
       this.handleSelect = this.handleSelect.bind(this);
       this.handleSelectPlayer = this.handleSelectPlayer.bind(this);
       this.handleDeploy = this.handleDeploy.bind(this);
-    }
+      this.handleModeChange = this.handleModeChange.bind(this);
 
+    }
+    //Need to set selected to null if not mode = 1
+    handleModeChange(mode) {
+      //alert(mode);
+      this.setState({'mode': parseInt( mode)});
+      
+    }
     handleDeploy() {
         // alert(mode);
 
@@ -94,6 +101,11 @@ class App extends React.Component {
               isLoaded: true,
               player: result
             });
+            if (result.squares===0)
+            {
+              this.setState({'mode':3});
+            }
+
           },
           // Note: it's important to handle errors here
           // instead of a catch() block so that we don't swallow
@@ -110,13 +122,20 @@ class App extends React.Component {
     }
 
     componentDidMount() {   
-      this.GetPlayer(this.state.playerID);
-      this.GetPlayers();
-      if (this.state.player.squares===0)
+      let id = 0;
+      if (localStorage.getItem('playerID')!= null)
       {
-        this.setState('mode',3);
+        id = parseInt(localStorage.getItem('playerID'));
+        console.log ("got id ("+id+") from localStorage");
+        this.setState ({'playerID':id});
       }
-      //this.interval = setInterval(() => this.GetPlayer(), 5000);  //Update Units    
+
+      this.GetPlayer(id);
+      this.GetPlayers();
+
+      console.log ("got player ("+id+"):"+ JSON.stringify(this.state.player));
+
+      this.interval = setInterval(() => this.GetPlayer(this.state.playerID), 5000);  //Update Units    
     }  
     
     componentWillUnmount() {
@@ -149,9 +168,10 @@ class App extends React.Component {
         <Nav className="mr-auto">
           <Nav.Link href="#home">Home</Nav.Link>
           <Nav.Link href="#link">Link</Nav.Link>
-        </Nav>      
+        </Nav>     
+        <Square2 owner={this.state.playerID} players={this.state.players}/> 
       <Nav>
-            <NavDropdown title="Player" id="player-dropdown" className="justify-content-end" 
+            <NavDropdown title={this.state.player.name} id="player-dropdown" className="justify-content-end" 
               onSelect={this.handleSelect} >
                 <NavDropdown.Item eventKey={1}>Logout</NavDropdown.Item>
           </NavDropdown>   
@@ -161,7 +181,8 @@ class App extends React.Component {
 <br/>
     <Container>      
       {this.state.playerID !=='' ?
-      <Game playerID={this.state.playerID} player = {this.state.player} onDeploy={this.handleDeploy} players={this.state.players}/>
+      <Game playerID={this.state.playerID} mode ={this.state.mode} player = {this.state.player} 
+      onDeploy={this.handleDeploy} players={this.state.players} onModeChange = {this.handleModeChange}/>
       : <Lobby onPlayerSelect={this.handleSelectPlayer}/>}  
     </Container>
     </div>

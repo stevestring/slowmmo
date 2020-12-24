@@ -2,39 +2,30 @@ import React from 'react';
 import { Board } from './Board';
 import Row from 'react-bootstrap/Row';
 import { BoardNav } from './BoardNav';
+import { Square2 } from './Square2';
 export class Game extends React.Component{
 
     constructor(props){
         super(props);
-        let m = 1
-        if (this.props.player.squares===0)
-        {
-            m=3;
-        }
 
         console.log("player: "+JSON.stringify(this.props.player));
 
         this.state = {
           //this sets up an empty board
           'isLoaded': false,
-          'mode':m //0=Deploy, 1=AttackSource, 2=AttackTarget, 3=FirstDeployment
+          //'mode':m //0=Deploy, 1=AttackSource, 2=AttackTarget, 3=FirstDeployment
         };   
         
         //alert (JSON.stringify(this.props.player));
 
         //bind this word to helper functions
         //this.handleClick = this.handleClick.bind(this);
-        this.handleModeChange = this.handleModeChange.bind(this);
+        //this.handleModeChange = this.handleModeChange.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
         //this.handleDeploy = this.handleDeploy.bind(this);
       }
 
-      //Need to set selected to null if not mode = 1
-    handleModeChange(mode) {
-      //alert(mode);
-      this.setState({'mode': parseInt( mode)});
-      
-    }
+
 
     handleSelect(key) {      
           //alert (key);
@@ -46,18 +37,20 @@ export class Game extends React.Component{
 
         return (<div>
             
-            <h1 style={{color:this.props.player.color}}>Name:{this.props.player.name}</h1>    
-            <h1>{this.state.mode}</h1>
-                {/* <h1 style={{color:this.props.player.color}}>{this.props.playerID}</h1>   */}
-                
-                {this.state.mode ===3 ?
-                    <h2>Choose your first placement (any gray square)</h2>
-                    : <BoardNav onModeChange={this.handleModeChange} player={this.props.player}/>}              
+            {/* <h1 className="text-center">
+                {this.props.player.name}
+            </h1>     */}
+            {/* <h1>{this.props.mode}</h1> */}
+
+                {this.props.mode ===3 ? //First placement
+                    <h3>Choose your first placement (any gray square)</h3>
+                    : <BoardNav onModeChange={this.props.onModeChange} player={this.props.player} mode={this.props.mode}/>}              
             <br/>
          
           <Row>
-          <Board playerId={this.props.playerID} mode={this.state.mode} 
-            onModeChange={this.handleModeChange} onDeploy={this.props.onDeploy} player ={this.props.player} players = {this.props.players}/>          
+          <Board playerId={this.props.playerID} mode={this.props.mode} 
+            onModeChange={this.props.onModeChange} onDeploy={this.props.onDeploy}
+            player ={this.props.player} players = {this.props.players}/>          
          </Row>
          </div>
          

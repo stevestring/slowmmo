@@ -8,7 +8,7 @@ export class BoardNav extends React.Component{
 
         return (
         <Row>
-        <Nav variant="pills" defaultActiveKey={1} onSelect={this.props.onModeChange}>
+        <Nav variant="pills" defaultActiveKey={this.props.mode} onSelect={this.props.onModeChange}>
         <Nav.Item>
             <Nav.Link eventKey={1}  >
             Attack

@@ -1,7 +1,7 @@
 //import React and Square component
 import React from 'react';
 import { Square } from './Square';
-
+import Table from 'react-bootstrap/Table';
 
 //main board component with game logic
 export class Board extends React.Component{
@@ -248,10 +248,10 @@ Claim(sourceX, sourceY){
       //define styles for the <table> element in the return() function below
       const style={
               //textAlign:"center",
-              margin:"auto",
-              height: "auto",
-              width:"500px",
-              //tableLayout:'fixed',
+              //margin:"auto",
+              //height: "auto",
+              //width:"500px",
+              tableLayout:'fixed',
               color: "white",
             };
 
@@ -260,12 +260,13 @@ Claim(sourceX, sourceY){
       //const u = null;
       //loop through the squares in each row and generate a new Square component,
       //passing in props to the Square component in the nested map() function
-      const board = Object.keys(g).map((row, i) => { return (     
+      const board = Object.keys(g).map((row, i) => { return (   
+        
         <tr key={"row_"+i}>
           
           {Object.keys(g[row]).map((col, j) => {    
                       
-            const selected_ = s[0] === i && s[1] === j;    
+            const selected_ = s[0] === i && s[1] === j && this.props.mode===2;    
 
             //set the color of the square based on state.grid
 
@@ -276,7 +277,8 @@ Claim(sourceX, sourceY){
               // <Square handleClick={()=>this.handleClick(i,j)} owner={g[i][j]} units={Math.floor(Math.random()*100)} key={i+"_"+j} />
               <Square handleClick={()=>this.handleClick(i,j)} 
                   owner={g[i][j].owner} units={g[i][j].units} selected={selected_} 
-                  key={i+"_"+j} playerId = {this.props.playerId} players = {this.props.players}/>
+                  key={i+"_"+j} playerId = {this.props.playerId} players = {this.props.players} 
+                  mode={this.props.mode}/>
                 )
               }
             )
@@ -290,14 +292,13 @@ Claim(sourceX, sourceY){
       //as well as a simple Button component that takes the handleReset function as a prop
       //this could be further refactored to separate the layout and styling, but it isn't that complicated so I will leave it like this
       return (
-        <div style={{ textAlign:'center'}}>
-        <table cellSpacing="0" style={style}>
+        <div style={{ textAlign:'center'}} >
+        <table style={style}>
           <tbody>
             {board}
           </tbody>
         </table>
-        <br />
-        {/* <Button onClick={this.handleReset} /> */}
+
         </div>
       )
     }
