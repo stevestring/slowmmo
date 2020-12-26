@@ -101,15 +101,27 @@ class App extends React.Component {
       })
         .then(res => res.json())
         .then(
-          (result) => {            
+          (result) => {  
+
+            if (result !=={})
+            {
             this.setState({
               isLoaded: true,
-              player: result
-            });
-            if (result.squares===0)
-            {
-              this.setState({'mode':3});
+              player: result})
+
+              if (result.squares===0)
+              {
+                this.setState({'mode':3});
+              }
+
             }
+            else
+            {
+              this.setState({
+                isLoaded: true,
+                playerID: 0
+              })            
+            }   
 
           },
           // Note: it's important to handle errors here
@@ -135,7 +147,15 @@ class App extends React.Component {
         this.setState ({'playerID':id});
       }
 
-      this.GetPlayer(id);
+       this.GetPlayer(id);
+
+      // console.log (JSON.stringify(this.state.player));
+      // if (this.state.player.playerID ===0)
+      // {
+      //   this.setState({'playerID': ''});
+      //   localStorage.removeItem('playerID');  //is this actually necessary?
+      // }
+
       this.GetPlayers();
 
       console.log ("got player ("+id+"):"+ JSON.stringify(this.state.player));
