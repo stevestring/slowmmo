@@ -21,8 +21,8 @@ export class Board extends React.Component{
       'sourceUnit':0,
       'targetUnit':0,
       'targetPlayerID':0,
-      'result':false
-      
+      'result':false      
+
     };
 
     //bind this word to helper functions
@@ -69,7 +69,9 @@ export class Board extends React.Component{
 
   loadData(message)
   {
+    //console.log ("got ping");
     console.log(message);
+
   }
 
   handleHide() {
@@ -311,7 +313,7 @@ Claim(sourceX, sourceY){
       //this could be further refactored to separate the layout and styling, but it isn't that complicated so I will leave it like this
       return (
         <div style={{ textAlign:'center'}} >
-          <Modal
+          {/* <Modal
           show={this.state.showModal}
           //show={true}
           onHide={this.handleHide}
@@ -344,11 +346,11 @@ Claim(sourceX, sourceY){
            
           </Modal.Body>
           <Modal.Footer>
-            {/* {JSON.stringify(this.state)} */}
+            {/* {JSON.stringify(this.state)}
             <Button onClick={this.handleHide}>Close</Button>
           </Modal.Footer>
-        </Modal>
-
+        </Modal> 
+ */}
 
         <table style={style} class="unselectable">
           <tbody>

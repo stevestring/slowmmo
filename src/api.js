@@ -7,7 +7,7 @@ const  socket = openSocket(socketurl+":8080");
 //TODO: Look into namespaces and rooms instead of prefix
 function subscribeToBoardChanges(cb) {
     socket.on("board", callBack => cb());
-    socket.emit('subscribeToBoardChanges');
+    // socket.emit('subscribeToBoardChanges');
   }
 export   {subscribeToBoardChanges};
 
