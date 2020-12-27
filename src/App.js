@@ -14,7 +14,7 @@ class App extends React.Component {
         'isLoaded': false,
         'playerID': '', //should be player object
         'player':{playerID: 0, units:0},
-        'mode':1, //0=Deploy, 1=AttackSource, 2=AttackTarget, 3=FirstDeployment
+        'mode':1, //0=Idle, 1=AttackSource, 2=AttackTarget, 3=FirstDeployment
         'players':{},
       };   
       

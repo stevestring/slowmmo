@@ -1,5 +1,10 @@
 import React from 'react';
-
+// import { FaRegHandScissors } from "react-icons/fa";
+// import { FaRegHandRock } from "react-icons/fa";
+// import { FaRegHandPaper } from "react-icons/fa";
+import { FaHandPaper } from "react-icons/fa";
+import { FaHandScissors } from "react-icons/fa";
+import { FaHandRock } from "react-icons/fa";
 export class Square2 extends React.Component{
   render(){
     
@@ -39,6 +44,30 @@ export class Square2 extends React.Component{
         //borderColor_ = "yellow";
         border_ = "2px solid white"; 
     }
+
+    function Symbol({ unitType }) {
+      if (owner!==playerId)
+      {
+        return null;
+      }
+      else
+      {
+        if (unitType===1) {
+          return <FaHandRock/>;
+        }
+        else if (unitType===2) {
+          return <FaHandScissors/>;
+        }
+        else if (unitType===3) {
+          return < FaHandPaper/>;
+        }
+        else //empty
+        {
+          return null;
+        }
+      }
+    }
+
     return (
 
         <div
@@ -52,7 +81,8 @@ export class Square2 extends React.Component{
                   height:"2vw",
                   fontSize: "1vw",
                   cursor: cursor_ }} >
-            {units}           
+            {/* {units}            */}
+            <Symbol unitType={units}/>
         </div>
   
     )

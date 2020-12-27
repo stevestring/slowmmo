@@ -14,7 +14,7 @@ export class BoardNav extends React.Component{
             </Nav.Link>
         </Nav.Item>                
         <Nav.Item>
-            <Nav.Link eventKey={0}>Deploy <Badge variant="light">{this.props.player.units}</Badge></Nav.Link>
+            <Nav.Link eventKey={0}>Change</Nav.Link>
         </Nav.Item> 
         </Nav>
         

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Board } from './Board';
 import Row from 'react-bootstrap/Row';
-import { BoardNav } from './BoardNav';
 import { Square2 } from './Square2';
 export class Game extends React.Component{
 
@@ -15,14 +14,9 @@ export class Game extends React.Component{
           'isLoaded': false,
           //'mode':m //0=Deploy, 1=AttackSource, 2=AttackTarget, 3=FirstDeployment
         };   
-        
-        //alert (JSON.stringify(this.props.player));
 
-        //bind this word to helper functions
-        //this.handleClick = this.handleClick.bind(this);
-        //this.handleModeChange = this.handleModeChange.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
-        //this.handleDeploy = this.handleDeploy.bind(this);
+
       }
 
 
@@ -45,7 +39,7 @@ export class Game extends React.Component{
 <Row>
                 {this.props.mode ===3 ? //First placement
                     <h4>Choose any grey square to begin...</h4>
-                    : <BoardNav onModeChange={this.props.onModeChange} player={this.props.player} mode={this.props.mode}/>}              
+                    : <br/>}              
             
             </Row>
       
