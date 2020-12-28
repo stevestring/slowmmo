@@ -6,7 +6,8 @@ const  socket = openSocket(socketurl+":8080");
 //Subscribe to socketIO room updates 
 //TODO: Look into namespaces and rooms instead of prefix
 function subscribeToBoardChanges(cb) {
-    socket.on("board", callBack => cb());
+    console.log("adding socket listener - should only see once");
+    socket.on("board", message => cb(message));
     // socket.emit('subscribeToBoardChanges');
   }
 export   {subscribeToBoardChanges};

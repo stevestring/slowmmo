@@ -29,7 +29,7 @@ export class Board extends React.Component{
     this.handleClick = this.handleClick.bind(this);
     this.handleHide = this.handleHide.bind(this);
 
-    subscribeToBoardChanges((err,message) => this.loadData(message));
+
 
   }
 
@@ -64,6 +64,7 @@ export class Board extends React.Component{
         }
       )
 
+      subscribeToBoardChanges((message) => this.loadData(message));
       
   }
 
@@ -71,6 +72,12 @@ export class Board extends React.Component{
   {
     //console.log ("got ping");
     console.log(message);
+
+    let g = this.state.grid;
+
+    g[message.y][message.x].owner=message.owner;
+
+    this.setState ({grid:g});
 
   }
 
