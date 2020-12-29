@@ -103,8 +103,10 @@ class App extends React.Component {
         .then(
           (result) => {  
 
-            if (result !=={})
+            
+            if (result !=='')
             {
+              //alert (result);
             this.setState({
               isLoaded: true,
               player: result})
@@ -117,9 +119,10 @@ class App extends React.Component {
             }
             else
             {
+              console.log("player: "+ playerID + " not found");
               this.setState({
                 isLoaded: true,
-                playerID: 0
+                playerID:'',
               })            
             }   
 
@@ -130,8 +133,9 @@ class App extends React.Component {
           (error) => {
             this.setState({
               isLoaded: true,
-              error
+              error              
             });
+            //alert (error);
           }
         )
 
@@ -139,7 +143,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {   
-      let id = 0;
+      let id = '';
       if (localStorage.getItem('playerID')!= null)
       {
         id = parseInt(localStorage.getItem('playerID'));
@@ -147,7 +151,9 @@ class App extends React.Component {
         this.setState ({'playerID':id});
       }
 
-       this.GetPlayer(id);
+      //alert (id);
+      this.GetPlayer(id);
+      console.log ("got player ("+id+"):"+ JSON.stringify(this.state.player));
 
       // console.log (JSON.stringify(this.state.player));
       // if (this.state.player.playerID ===0)
@@ -158,7 +164,7 @@ class App extends React.Component {
 
       this.GetPlayers();
 
-      console.log ("got player ("+id+"):"+ JSON.stringify(this.state.player));
+      
 
       this.interval = setInterval(() => this.GetPlayer(this.state.playerID), 5000);  //Update Units    
     }  
