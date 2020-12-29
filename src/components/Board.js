@@ -320,7 +320,7 @@ Claim(sourceX, sourceY){
       //this could be further refactored to separate the layout and styling, but it isn't that complicated so I will leave it like this
       return (
         <div style={{ textAlign:'center'}} >
-          {/* <Modal
+          <Modal
           show={this.state.showModal}
           //show={true}
           onHide={this.handleHide}
@@ -352,12 +352,11 @@ Claim(sourceX, sourceY){
           </div>
            
           </Modal.Body>
-          <Modal.Footer>
-            {/* {JSON.stringify(this.state)}
+          <Modal.Footer>          
             <Button onClick={this.handleHide}>Close</Button>
           </Modal.Footer>
         </Modal> 
- */}
+
 
         <table style={style} class="unselectable">
           <tbody>
