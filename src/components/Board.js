@@ -74,10 +74,30 @@ export class Board extends React.Component{
     console.log(message);
 
     let g = this.state.grid;
+    if (g.length !== 0)
+    {
+      try {
+        g[message.y][message.x].owner=message.owner;
+      }
+      catch{
+        console.log("grid not found");  
+      }
+    }
 
-    g[message.y][message.x].owner=message.owner;
+    this.setState(prevState => ({
+      grid: {
+        ...prevState.grid,           // copy all other key-value pairs of food object
+        [message.y]: {                     // specific object of food object
+          ...prevState.grid[message.y],   // copy all pizza key-value pairs
+          [message.x]: {                     // specific object of food object
+            ...prevState.grid[message.y][message.x],   // copy all pizza key-value pairs
+            owner: [message.owner]          // update value of specific key
+          }        // update value of specific key
+        }
+      }
+    }))
 
-    this.setState ({grid:g});
+    //this.setState ({grid:g});
 
   }
 
@@ -109,12 +129,12 @@ export class Board extends React.Component{
         {
           console.log("Changing Unit: ["+ y + "," + x + "]");
           this.Deploy (x,y);          
-          this.setState({'grid':g});
+          //this.setState({'grid':g});
           this.props.onDeploy();
         }
         else if (g[y][x].owner !== this.props.playerId) //valid target?
         {
-            if (Math.abs(x-s[1]<=1) && Math.abs(y-s[0]<=1)) //adjacent
+            if (Math.abs(x-s[1])<=1 && Math.abs(y-s[0])<=1) //adjacent
             {
                 //TODO: this should come from API
                 this.setState({targetUnit:g[y][x].units});
@@ -125,7 +145,7 @@ export class Board extends React.Component{
                 
                 this.Attack (s[1],s[0],x,y)
                 .then(result=>{
-                  this.setState({result:this.state.grid[y][x].owner===this.props.playerId });
+                this.setState({result:this.state.grid[y][x].owner===this.props.playerId }); //who won?
                 }
                 );
 
