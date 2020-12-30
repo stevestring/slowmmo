@@ -1,7 +1,8 @@
 import React from 'react';
 import { Board } from './Board';
 import Row from 'react-bootstrap/Row';
-import { BoardNav } from './BoardNav';
+import Col from 'react-bootstrap/Col';
+import Table from 'react-bootstrap/Table';
 import { Square2 } from './Square2';
 export class Game extends React.Component{
 
@@ -15,14 +16,8 @@ export class Game extends React.Component{
           'isLoaded': false,
           //'mode':m //0=Deploy, 1=AttackSource, 2=AttackTarget, 3=FirstDeployment
         };   
-        
-        //alert (JSON.stringify(this.props.player));
 
-        //bind this word to helper functions
-        //this.handleClick = this.handleClick.bind(this);
-        //this.handleModeChange = this.handleModeChange.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
-        //this.handleDeploy = this.handleDeploy.bind(this);
       }
 
 
@@ -35,6 +30,18 @@ export class Game extends React.Component{
 
     render(){
 
+      const Leaderboard = Object.keys(this.props.players).map((keyName) => (
+        <tr>
+        <td><Square2  owner={this.props.players[keyName].playerID} color={this.props.players[keyName].color}/></td>
+        <td>{this.props.players[keyName].name}</td>
+        <td>{this.props.players[keyName].score}</td>
+        <td>{this.props.players[keyName].kills}</td>
+        <td>{this.props.players[keyName].killed}</td>
+        <td>{this.props.players[keyName].squares}</td>
+        </tr>
+    ))
+
+
         return (<div>           
             <Row className="justify-content-md-center">
 <Square2  owner={this.props.playerID} color={this.props.player.color}/>
@@ -45,18 +52,35 @@ export class Game extends React.Component{
 <Row>
                 {this.props.mode ===3 ? //First placement
                     <h4>Choose any grey square to begin...</h4>
-                    : <BoardNav onModeChange={this.props.onModeChange} player={this.props.player} mode={this.props.mode}/>}              
+                    : <br/>}              
             
             </Row>
       
           <br/>
-          <Row 
-        //   className="justify-content-md-center"
-          >
-              
+          <Row>
+          <Col xl={11}>
+
           <Board playerId={this.props.playerID} mode={this.props.mode} 
             onModeChange={this.props.onModeChange} onDeploy={this.props.onDeploy}
-            player ={this.props.player} players = {this.props.players}/>          
+            player ={this.props.player} players = {this.props.players}/>   
+            </Col>
+            <Col xl={1}>
+              <Table size="sm" borderless={ true }>
+  <thead>
+    <tr>
+      <th>Color</th>
+      <th>Name</th>
+      <th>Score</th>
+      <th>Kills</th>
+      <th>Killed</th>
+      <th>Squares</th>
+    </tr>
+  </thead>
+  <tbody>
+    {Leaderboard}
+  </tbody>
+</Table>
+            </Col>
          </Row>
          </div>
          

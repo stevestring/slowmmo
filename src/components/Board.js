@@ -2,7 +2,11 @@
 import React from 'react';
 import { Square } from './Square';
 import Table from 'react-bootstrap/Table';
-
+import Modal from 'react-bootstrap/Modal';
+import Row from 'react-bootstrap/Row';
+import Button from 'react-bootstrap/Button';
+import { Square2 } from './Square2';
+import {subscribeToBoardChanges} from '../api.js';
 //main board component with game logic
 export class Board extends React.Component{
   constructor(props){
@@ -12,15 +16,33 @@ export class Board extends React.Component{
       //this sets up an empty board
       'isLoaded': false,
       'grid':grid, 
-      'selected': [-1,-1]
-      
+      'selected': [-1,-1],
+      'showModal':false,
+      'sourceUnit':0,
+      'targetUnit':0,
+      'targetPlayerID':0,
+      'result':false      
+
     };
 
     //bind this word to helper functions
     this.handleClick = this.handleClick.bind(this);
+    this.handleHide = this.handleHide.bind(this);
+
   }
 
   componentDidMount() {
+
+      this.GetBoard();
+
+      //subscribeToBoardChanges((message) => this.loadData(message));
+      this.interval = setInterval(() => this.GetBoard(), 1000);  //Update Board  
+  }
+
+  GetBoard()
+  {
+    console.log ("getting board");
+
     fetch("http://"+process.env.REACT_APP_API_SERVER+":8080/game",{
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
       //mode: 'no-cors', // no-cors, *cors, same-origin
@@ -50,11 +72,44 @@ export class Board extends React.Component{
           });
         }
       )
-
-      
   }
 
+  loadData(message)
+  {
+    //console.log ("got ping");
+    console.log(message);
 
+    let g = this.state.grid;
+    if (g.length !== 0)
+    {
+      try {
+        g[message.y][message.x].owner=message.owner;
+      }
+      catch{
+        console.log("grid not found");  
+      }
+    }
+
+    this.setState(prevState => ({
+      grid: {
+        ...prevState.grid,           // copy all other key-value pairs of food object
+        [message.y]: {                     // specific object of food object
+          ...prevState.grid[message.y],   // copy all pizza key-value pairs
+          [message.x]: {                     // specific object of food object
+            ...prevState.grid[message.y][message.x],   // copy all pizza key-value pairs
+            owner: [message.owner]          // update value of specific key
+          }        // update value of specific key
+        }
+      }
+    }))
+
+    //this.setState ({grid:g});
+
+  }
+
+  handleHide() {
+    this.setState({ showModal: false });
+  }
 
   handleClick(y, x){
 
@@ -63,36 +118,7 @@ export class Board extends React.Component{
       const s = this.state.selected;
       //set the grid square cooresponding to the clicked square to the color of the current player
       
-      //console.log(m===0);
-      if (m===0)
-      {
-        
-        if (g[y][x].owner !== this.props.playerId )
-        {
-          console.log(g[y][x].owner +" != " + this.props.playerId);
-          // console.log(g[y][x].owner === '7');
-          // console.log(this.props.playerId === '7');
-        }
-        else
-        {
-          if (g[y][x].units>98 )
-          {
-            console.log("["+ x + "," + y + "] is maxed out");
-          }
-          else if (this.props.player.units<1)
-          {
-            console.log("No units to deploy");
-          }
-          else
-          {
-            console.log("adding units: ["+ x + "," + y + "]");
-            this.Deploy (x,y);          
-            this.setState({'grid':g});
-            this.props.onDeploy();
-          }
-        }
-      }
-      else if (m===1)
+      if (m===1)
       {
         //make sure owned 
         console.log("selecting: "+this.props.playerId) ;
@@ -105,24 +131,47 @@ export class Board extends React.Component{
       }
       else if (m===2)
       {
-        if (x===s[1] && y===s[0])//unselect
+        if (x===s[1] && y===s[0])//switch Units (Deploy) 
         {
-            this.setState({'selected':[-1,-1]});
-            //this.setState({'mode':1});          
-            this.props.onModeChange(1);    
+          console.log("Changing Unit: ["+ y + "," + x + "]");
+          this.Deploy (x,y);          
+          //this.setState({'grid':g});
+          this.props.onDeploy();
         }
         else if (g[y][x].owner !== this.props.playerId) //valid target?
         {
-            if (Math.abs(x-s[1]<=1) && Math.abs(y-s[0]<=1)) //adjacent
+            if (Math.abs(x-s[1])<=1 && Math.abs(y-s[0])<=1) //adjacent
             {
+                //TODO: this should come from API
+                this.setState({targetUnit:g[y][x].units});
+                this.setState({sourceUnit:g[s[0]][s[1]].units});
+                this.setState({targetPlayerID:g[y][x].owner});            
+
+                //this.Attack (s[1],s[0],x,y)      
+                
                 this.Attack (s[1],s[0],x,y)
+                .then(result=>{
+                  //console.log(JSON.stringify(result));
+                  //this.setState({result:true }); //who won?
+                }
+                );
+
 
                 this.setState({'selected':[-1,-1]});
-                this.setState({'grid':g});   
+                //this.setState({'grid':g});  //is this still necessary?  Doesn't Attack do this? 
                 
+                
+
+                this.setState({'showModal':true});   
+
                 //this.setState({'mode':1});  
                 this.props.onModeChange(1);
             }
+        }
+        else if (g[y][x].owner === this.props.playerId) //select another square
+        {
+          this.setState({'selected':[y,x]});
+          this.props.onModeChange(2);
         }
       }
       else if (m===3)//first placement
@@ -134,14 +183,14 @@ export class Board extends React.Component{
           this.Claim (x,y);          
           this.setState({'grid':g});
           this.props.onDeploy();
-          this.props.onModeChange(0);
+          this.props.onModeChange(1);
         }
       }
 
   }
 
-  Attack(sourceX, sourceY, targetX, targetY){
-    fetch("http://"+process.env.REACT_APP_API_SERVER+":8080/game/attack/"+this.props.playerId+"/"+sourceX+"/"+sourceY + "/" + targetX+"/"+targetY, {
+  async Attack(sourceX, sourceY, targetX, targetY){
+    await fetch("http://"+process.env.REACT_APP_API_SERVER+":8080/game/attack/"+this.props.playerId+"/"+sourceX+"/"+sourceY + "/" + targetX+"/"+targetY, {
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'same-origin', // include, *same-origin, omit
@@ -156,8 +205,10 @@ export class Board extends React.Component{
         (result) => {
           this.setState({
             isLoaded: true,
-            grid: result
+            result: result.result===1
           });
+          // console.log(result.result);
+          // return result;
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
@@ -185,19 +236,36 @@ export class Board extends React.Component{
       .then(res => res.json())
       .then(
         (result) => {
-          this.setState({
-            isLoaded: true,
-            grid: result
-          });
+          // this.setState({
+          //   //isLoaded: true,
+          //   //grid: result //Could just update single square
+          // });
+
+
+          this.setState(prevState => ({
+            grid: {
+              ...prevState.grid,           // copy all other key-value pairs of food object
+              [sourceY]: {                     // specific object of food object
+                ...prevState.grid[sourceY],   // copy all pizza key-value pairs
+                [sourceX]: {                     // specific object of food object
+                  ...prevState.grid[sourceY][sourceX],   // copy all pizza key-value pairs
+                  units: result[sourceY][sourceX].units          // update value of specific key
+                }        // update value of specific key
+              }
+            }
+          }))
+
+
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
         // exceptions from actual bugs in components.
         (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
+          // this.setState({
+          //   //isLoaded: true,
+          //   error
+          // });
+          console.log("Deploy Error: "+ error);
         }
       )
   }
@@ -297,6 +365,45 @@ Claim(sourceX, sourceY){
       //this could be further refactored to separate the layout and styling, but it isn't that complicated so I will leave it like this
       return (
         <div style={{ textAlign:'center'}} >
+          <Modal
+          show={this.state.showModal}
+          //show={true}
+          onHide={this.handleHide}
+          // container={this}
+          aria-labelledby="contained-modal-title"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title id="contained-modal-title">
+            {this.state.result === true ? //First placement
+                    "You won!"
+                    : "You lost!"}     
+              
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            
+          <div style ={{color:'white', textAlign:"center"}}>
+            <Row className="justify-content-md-center">
+            <Square2 units = {this.state.sourceUnit} owner = {this.props.playerId} 
+            color={this.props.player.color} selected={false} playerId={this.props.playerId}
+            mode={0}/><span>&nbsp;</span> 
+            <h4 style ={{color:'black'}}>            
+            {this.state.result === true ? //First placement
+                    "beats"
+                    : "does not beat"}    </h4><span>&nbsp;</span> 
+          <Square2 units = {this.state.targetUnit} owner = {this.props.playerId} //playerID must be same to show unit
+            color={this.props.players[this.state.targetPlayerID].color} selected={false} playerId={this.props.playerId}
+            mode={0}/> 
+            </Row>
+          </div>
+           
+          </Modal.Body>
+          {/* <Modal.Footer>          
+            <Button onClick={this.handleHide}>Close</Button>
+          </Modal.Footer> */}
+        </Modal> 
+
+
         <table style={style} class="unselectable">
           <tbody>
             {board}

@@ -14,7 +14,7 @@ class App extends React.Component {
         'isLoaded': false,
         'playerID': '', //should be player object
         'player':{playerID: 0, units:0},
-        'mode':1, //0=Deploy, 1=AttackSource, 2=AttackTarget, 3=FirstDeployment
+        'mode':1, //0=Idle, 1=AttackSource, 2=AttackTarget, 3=FirstDeployment
         'players':{},
       };   
       
@@ -33,8 +33,8 @@ class App extends React.Component {
     handleDeploy() {
         // alert(mode);
 
-        var player = this.state.player;
-        player.units = player.units -1 ;
+        //var player = this.state.player;
+        //player.units = player.units -1 ;
 
         // if (player.squares===0) //Maybe not the best place for this
         // {
@@ -42,7 +42,7 @@ class App extends React.Component {
         // }
 
         //console.log(player.units);
-        this.setState({'player':player});
+        //this.setState({'player':player});
 
         //this.setState({'player': {playerID:this.state.playerID, units:this.state.player.units-1}});
     }
@@ -103,10 +103,12 @@ class App extends React.Component {
         .then(
           (result) => {  
 
-            if (result !=={})
+            
+            if (result !=='')
             {
+              //alert (result);
             this.setState({
-              isLoaded: true,
+              //isLoaded: true,
               player: result})
 
               if (result.squares===0)
@@ -117,9 +119,10 @@ class App extends React.Component {
             }
             else
             {
+              console.log("player: "+ playerID + " not found");
               this.setState({
                 isLoaded: true,
-                playerID: 0
+                playerID:'',
               })            
             }   
 
@@ -130,8 +133,9 @@ class App extends React.Component {
           (error) => {
             this.setState({
               isLoaded: true,
-              error
+              error              
             });
+            //alert (error);
           }
         )
 
@@ -139,7 +143,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {   
-      let id = 0;
+      let id = '';
       if (localStorage.getItem('playerID')!= null)
       {
         id = parseInt(localStorage.getItem('playerID'));
@@ -147,20 +151,15 @@ class App extends React.Component {
         this.setState ({'playerID':id});
       }
 
-       this.GetPlayer(id);
+      this.GetPlayer(id);
+      console.log ("got player ("+id+"):"+ JSON.stringify(this.state.player));
+      this.interval = setInterval(() => this.GetPlayer(this.state.playerID), 5000);  //Update Player Data  (Is this necessary with "players")
 
-      // console.log (JSON.stringify(this.state.player));
-      // if (this.state.player.playerID ===0)
-      // {
-      //   this.setState({'playerID': ''});
-      //   localStorage.removeItem('playerID');  //is this actually necessary?
-      // }
 
       this.GetPlayers();
-
-      console.log ("got player ("+id+"):"+ JSON.stringify(this.state.player));
-
-      this.interval = setInterval(() => this.GetPlayer(this.state.playerID), 5000);  //Update Units    
+      this.interval = setInterval(() => this.GetPlayers(), 5000);  //Update Players 
+      
+        
     }  
     
     componentWillUnmount() {
