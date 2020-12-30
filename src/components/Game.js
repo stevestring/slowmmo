@@ -38,6 +38,7 @@ export class Game extends React.Component{
         <td>{this.props.players[keyName].kills}</td>
         <td>{this.props.players[keyName].killed}</td>
         <td>{this.props.players[keyName].squares}</td>
+        <td>{this.props.players[keyName].moves}</td>
         </tr>
     ))
 
@@ -48,7 +49,7 @@ export class Game extends React.Component{
 <span>&nbsp;</span> 
 <h2 style={{float:"left"}} >{this.props.player.name}</h2>
 <div style={{clear:"both"}}></div></Row>
-
+<Row>Moves: {this.props.player.moves}</Row>
 <Row>
                 {this.props.mode ===3 ? //First placement
                     <h4>Choose any grey square to begin...</h4>
@@ -74,6 +75,7 @@ export class Game extends React.Component{
       <th>Kills</th>
       <th>Killed</th>
       <th>Squares</th>
+      <th>Moves</th>
     </tr>
   </thead>
   <tbody>
